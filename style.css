@@ -1,0 +1,178 @@
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding: 0;
+}
+.container{
+  background-image: url('im.png');
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: cover;
+  
+    max-width: 800px;
+    min-height: 100vh;
+    
+    padding: 10px;
+    display: flex;                      /* to center the box */
+  
+    flex-direction: column;
+    align-items: center;
+
+}
+/* Put task list & image side-by-side */
+.tasks-and-motivation {
+  display: flex;             /* side by side */
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  width: 100%;
+  max-width: 800px;
+  margin-top: 20px;
+                   /* space between them */
+}
+
+/* Make list shrink nicely */
+#taskList {
+  flex: 1;                   /* take remaining width */
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  white-space: nowrap; 
+  text-align: left; 
+  border: 1px;
+  min-height: 150px;
+  min-width: 150px;
+}
+.motivation{
+  flex-shrink: 0;
+}
+
+
+
+
+/* Style for the motivation image */
+.motivation img {
+  max-width: 250px;          /* adjust size as needed */
+  height: auto;
+  border-radius: 12px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  white-space: nowrap;  
+}
+
+/* Mobile: stack vertically */
+@media (max-width: 600px) {
+  .tasks-and-motivation {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+
+h1 {
+    
+    width: 100%;
+    white-space: nowrap;  
+    display: flex;                      /* to center the box */
+    justify-content: center;            /* horizontally center */
+    align-items: center;
+    text-align: center;
+    display: flex;
+    padding: 10px;
+    
+    
+
+}
+
+.logo {
+    width: 100px;                 /* Adjust as you like */
+    height: 100px;
+    object-fit: contain; 
+    justify-content: center;            /* horizontally center */
+    align-items: center;
+    text-align: center; 
+    
+        /* Keep proportions */
+}
+.task-box {
+    display: flex;
+    flex-direction: column;   /* Stack elements vertically */
+    align-items: center;      /* Center them horizontally */
+    gap: 15px;                /* Space between input, button, and list */
+    margin-top: 50px;
+    width: 100%;
+    padding-top: 50px; 
+}
+
+#taskInput {
+      width: 500px;
+      height: 40px;
+      padding: 10px right;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      white-space: nowrap;  
+    }
+#addBtn {
+    width: 100px;
+      height: 40px;
+      padding: 10px 15px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;  
+}
+#addBtn:hover {
+      background: #45a049;
+}
+
+#taskList li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 18px;   /* ✅ Bigger text */
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+}
+.task-checkbox {
+  transform: scale(1.4);  /* ✅ Enlarges checkbox */
+  cursor: pointer;
+}
+.task-text.completed {
+  text-decoration: line-through;
+  color: gray;
+}
+#victoryImg {   
+      display: none !important; /* Force hide initially */
+      opacity: 0;   
+      transform: scale(0.5);
+      margin: 20px auto;
+      max-width: 200px;
+      width: 100%;
+      border-radius: 15px;
+    }     
+
+    #victoryImg.show {   
+      display: block !important; /* Force show when class is added */
+      animation: victorypop 0.8s ease-out forwards !important; 
+    } 
+
+    /* 🎯 FIXED: Correct animation name */
+    @keyframes victorypop {   
+      0% { 
+        transform: scale(0.3) rotate(-15deg); 
+        opacity: 0; 
+      }   
+      50%  { 
+        transform: scale(1.1) rotate(5deg);  
+        opacity: 1; 
+      }   
+      70%  { 
+        transform: scale(0.95) rotate(-2deg); 
+        opacity: 1; 
+      }   
+      100% { 
+        transform: scale(1) rotate(0deg); 
+        opacity: 1; 
+      } 
+    }
