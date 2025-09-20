@@ -13,17 +13,23 @@
 
     <div class="todolist">
       <h1>
-
         <img src="icon.jpeg" alt="icon" class="logo"> TO-DO LIST
       </h1>
 
-      <div class="task-box">
+      <!-- Login/Register -->
+      <div id="authContainer">
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Password">
+        <button id="registerBtn">Register</button>
+        <button id="loginBtn">Login</button>
+      </div>
+
+      <!-- Task Box (hidden until user logs in) -->
+      <div class="task-box" id="taskBox" style="display:none;">
         <div class="input-row">
           <input type="text" id="taskInput" placeholder="Enter a task">
           <button id="addBtn">Add</button>
         </div>
-        
-    
 
         <div class="row tasks-and-motivation">
           <ul id="taskList"></ul>
@@ -40,125 +46,123 @@
     </div>
   </div>
 
-
   <script type="module">
-    // Import Firebase SDKs from CDN
+    // Firebase SDKs
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-app.js";
-    import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp }
-      from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, onSnapshot, doc, updateDoc, deleteDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-firestore.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.3.0/firebase-auth.js";
 
-    // Your Firebase configuration
+    // Firebase config
     const firebaseConfig = {
-      
+      apiKey: "AIzaSyBoW7a3NWL0DS5ynJymIrr0gP1hdIa6SXY",
       authDomain: "my-to-d0.firebaseapp.comgit",
       projectId: "my-to-d0",
       storageBucket: "my-to-d0.firebasestorage.app",
       messagingSenderId: "820680960546",
-      appId: "1:820680960546:web:60843763935c4d0790787b",
-      measurementId: "G-GJGEQW6ST7"
+      appId: "1:820680960546:web:60843763935c4d0790787b"
     };
 
     // Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth();
 
+    // DOM elements
     const taskInput = document.getElementById("taskInput");
     const addBtn = document.getElementById("addBtn");
     const taskList = document.getElementById("taskList");
     const victoryImg = document.getElementById('victoryImg');
+    const authContainer = document.getElementById("authContainer");
+    const taskBox = document.getElementById("taskBox");
+    const emailInput = document.getElementById("email");
+    const passwordInput = document.getElementById("password");
+    const registerBtn = document.getElementById("registerBtn");
+    const loginBtn = document.getElementById("loginBtn");
 
-    const tasksCol = collection(db, "tasks");
+    let tasksCol; // Will be user-specific
 
-    // Victory check function
-    function checkVictory() {
-      // Use setTimeout to ensure DOM is fully updated
-      setTimeout(() => {
-        const tasks = document.querySelectorAll('#taskList li');
-        const completed = document.querySelectorAll('#taskList li .task-checkbox:checked');
+    // Register user
+    registerBtn.addEventListener("click", () => {
+      const email = emailInput.value;
+      const password = passwordInput.value;
+      createUserWithEmailAndPassword(auth, email, password)
+        .then(userCredential => {
+          console.log("Registered:", userCredential.user.uid);
+        })
+        .catch(error => alert(error.message));
+    });
 
-        console.log(`Total tasks: ${tasks.length}, Completed: ${completed.length}`); // Debug log
+    // Login user
+    loginBtn.addEventListener("click", () => {
+      const email = emailInput.value;
+      const password = passwordInput.value;
+      signInWithEmailAndPassword(auth, email, password)
+        .then(userCredential => {
+          console.log("Logged in:", userCredential.user.uid);
+        })
+        .catch(error => alert(error.message));
+    });
 
-        if (tasks.length > 0 && tasks.length === completed.length) {
-          console.log("🎉 All tasks completed! Showing victory image"); // Debug log
-          victoryImg.style.display = 'block';
-          victoryImg.classList.add('show');
-        } else {
-          console.log("Tasks remaining or no tasks"); // Debug log
-          victoryImg.classList.remove('show');
-          // Don't immediately hide, let animation complete
-          setTimeout(() => {
-            if (!victoryImg.classList.contains('show')) {
-              victoryImg.style.display = 'none';
-            }
-          }, 300);
-        }
-      }, 100); // Small delay to ensure DOM is updated
-    }
+    // Monitor authentication state
+    onAuthStateChanged(auth, user => {
+      if (user) {
+        console.log("User signed in:", user.uid);
+        authContainer.style.display = "none";
+        taskBox.style.display = "block";
 
-    // Real-time listener for tasks
-    onSnapshot(tasksCol, (snapshot) => {
-      taskList.innerHTML = "";
+        // Tasks collection specific to user
+        tasksCol = collection(db, "tasks_" + user.uid);
 
-      let taskCount = 0;
-      let completedCount = 0;
+        // Listen to tasks in real-time
+        onSnapshot(tasksCol, snapshot => {
+          taskList.innerHTML = "";
+          snapshot.forEach(docSnap => {
+            const task = docSnap.data();
+            const li = document.createElement("li");
+            li.dataset.id = docSnap.id;
 
-      snapshot.forEach((docSnap) => {
-        const task = docSnap.data();
-        taskCount++;
-        if (task.completed) completedCount++;
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.checked = task.completed;
+            checkbox.classList.add("task-checkbox");
 
-        const li = document.createElement("li");
-        li.dataset.id = docSnap.id;
+            const span = document.createElement("span");
+            span.textContent = task.text;
+            span.classList.add("task-text");
+            if (task.completed) span.classList.add("completed");
 
-        // ✅ Checkbox
-        const checkbox = document.createElement("input");
-        checkbox.type = "checkbox";
-        checkbox.checked = task.completed;
-        checkbox.classList.add("task-checkbox");
+            const deleteBtn = document.createElement("button");
+            deleteBtn.textContent = "X";
+            deleteBtn.classList.add("deleteBtn");
 
-        // ✅ Task text
-        const span = document.createElement("span");
-        span.textContent = task.text;
-        span.classList.add("task-text");
-        if (task.completed) span.classList.add("completed");
+            li.appendChild(checkbox);
+            li.appendChild(span);
+            li.appendChild(deleteBtn);
+            taskList.appendChild(li);
+          });
 
-        // ✅ Delete button
-        const deleteBtn = document.createElement("button");
-        deleteBtn.textContent = "X";
-        deleteBtn.classList.add("deleteBtn");
+          checkVictory();
+        });
 
-        // ✅ Add to li
-        li.appendChild(checkbox);
-        li.appendChild(span);
-        li.appendChild(deleteBtn);
-        taskList.appendChild(li);
-      });
-
-      console.log(`Firebase data - Tasks: ${taskCount}, Completed: ${completedCount}`); // Debug log
-
-      // Check victory after DOM is updated
-      checkVictory();
+      } else {
+        authContainer.style.display = "block";
+        taskBox.style.display = "none";
+      }
     });
 
     // Add task
     addBtn.addEventListener("click", async () => {
       const text = taskInput.value.trim();
       if (!text) return;
-
       try {
-        await addDoc(tasksCol, {
-          text,
-          completed: false,
-          createdAt: serverTimestamp()
-        });
+        await addDoc(tasksCol, { text, completed: false, createdAt: serverTimestamp() });
         taskInput.value = "";
-      } catch (error) {
-        console.error("Error adding task:", error);
-        alert("Error adding task. Please try again.");
+      } catch (err) {
+        alert("Error adding task: " + err.message);
       }
     });
 
-    // Handle clicks (complete/delete)
+    // Handle checkbox & delete
     taskList.addEventListener("click", async (e) => {
       const li = e.target.closest("li");
       if (!li) return;
@@ -166,57 +170,40 @@
 
       try {
         if (e.target.classList.contains("deleteBtn")) {
-          await deleteDoc(doc(db, "tasks", id));
+          await deleteDoc(doc(db, tasksCol.path, id));
         }
-
         if (e.target.classList.contains("task-checkbox")) {
           const isCompleted = e.target.checked;
-
-          // Update the task text style immediately for better UX
           const taskText = li.querySelector('.task-text');
-          if (isCompleted) {
-            taskText.classList.add('completed');
-          } else {
-            taskText.classList.remove('completed');
-          }
+          if (isCompleted) taskText.classList.add("completed");
+          else taskText.classList.remove("completed");
 
-          // Check victory immediately on checkbox change
-          setTimeout(() => checkVictory(), 50);
-
-          await updateDoc(doc(db, "tasks", id), { completed: isCompleted });
+          await updateDoc(doc(db, tasksCol.path, id), { completed: isCompleted });
+          checkVictory();
         }
-      } catch (error) {
-        console.error("Error updating task:", error);
-        alert("Error updating task. Please try again.");
-
-        // Revert checkbox state on error
-        if (e.target.classList.contains("task-checkbox")) {
-          e.target.checked = !e.target.checked;
-          const taskText = li.querySelector('.task-text');
-          if (e.target.checked) {
-            taskText.classList.add('completed');
-          } else {
-            taskText.classList.remove('completed');
-          }
-        }
+      } catch (err) {
+        alert("Error updating task: " + err.message);
       }
     });
 
-    // Allow Enter key to add task
-    taskInput.addEventListener("keypress", (e) => {
-      if (e.key === "Enter") {
-        addBtn.click();
-      }
-    });
+    // Enter key to add task
+    taskInput.addEventListener("keypress", e => { if (e.key === "Enter") addBtn.click(); });
 
-    // Add some sample tasks for demonstration (optional - remove if you don't want them)
-    document.addEventListener("DOMContentLoaded", () => {
-      // Focus on input when page loads
-      taskInput.focus();
-    });
+    // Victory check
+    function checkVictory() {
+      const tasks = document.querySelectorAll('#taskList li');
+      const completed = document.querySelectorAll('#taskList li .task-checkbox:checked');
+      if (tasks.length > 0 && tasks.length === completed.length) {
+        victoryImg.style.display = 'block';
+        victoryImg.classList.add('show');
+      } else {
+        victoryImg.classList.remove('show');
+        setTimeout(() => { if (!victoryImg.classList.contains('show')) victoryImg.style.display = 'none'; }, 300);
+      }
+    }
   </script>
-
 </body>
-
-
 </html>
+
+
+
