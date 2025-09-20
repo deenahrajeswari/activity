@@ -1,178 +1,177 @@
-*{
-  box-sizing:border-box;
-  margin:0;
+* {
+  box-sizing: border-box;
+  margin: 0;
   padding: 0;
 }
-.container{
+
+.container {
   background-image: url('im.png');
   background-repeat: no-repeat;
   background-position: center center;
   background-size: cover;
-  
-    max-width: 800px;
-    min-height: 100vh;
-    
-    padding: 10px;
-    display: flex;                      /* to center the box */
-  
-    flex-direction: column;
-    align-items: center;
-
+  max-width: 1200px; /* Increased max-width for larger screens */
+  min-height: 100vh;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 auto; /* Center the container itself */
 }
+
 /* Put task list & image side-by-side */
 .tasks-and-motivation {
-  display: flex;             /* side by side */
-  justify-content: space-between;
+  display: flex;
+  justify-content: center; /* Changed from space-between for better centering */
   align-items: flex-start;
+  flex-wrap: wrap; /* Allows items to wrap on smaller screens */
   gap: 20px;
   width: 100%;
   max-width: 800px;
   margin-top: 20px;
-                   /* space between them */
 }
 
 /* Make list shrink nicely */
 #taskList {
-  flex: 1;                   /* take remaining width */
+  flex: 1;
+  min-width: 300px; /* Ensures list has a minimum width on larger screens */
   list-style: none;
   padding: 0;
   margin: 0;
-  white-space: nowrap; 
-  text-align: left; 
-  border: 1px;
+  text-align: left;
   min-height: 150px;
-  min-width: 150px;
 }
-.motivation{
+
+.motivation {
   flex-shrink: 0;
 }
 
-
-
-
 /* Style for the motivation image */
 .motivation img {
-  max-width: 250px;          /* adjust size as needed */
+  max-width: 100%; /* Ensures image doesn't overflow its container */
+  width: 250px; /* Sets a base width */
   height: auto;
   border-radius: 12px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  white-space: nowrap;  
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 /* Mobile: stack vertically */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .tasks-and-motivation {
     flex-direction: column;
     align-items: center;
   }
+
+  .motivation {
+    width: 100%; /* Image takes full width on mobile */
+    text-align: center;
+  }
 }
 
-
 h1 {
-    
-    width: 100%;
-    white-space: nowrap;  
-    display: flex;                      /* to center the box */
-    justify-content: center;            /* horizontally center */
-    align-items: center;
-    text-align: center;
-    display: flex;
-    padding: 10px;
-    
-    
-
+  width: 100%;
+  text-align: center;
+  display: flex;
+  padding: 10px;
+  justify-content: center;
+  align-items: center;
+  font-size: 8vw; /* Scales with viewport width */
 }
 
 .logo {
-    width: 100px;                 /* Adjust as you like */
-    height: 100px;
-    object-fit: contain; 
-    justify-content: center;            /* horizontally center */
-    align-items: center;
-    text-align: center; 
-    
-        /* Keep proportions */
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+  margin: 0 auto; /* Centers the logo */
 }
+
 .task-box {
-    display: flex;
-    flex-direction: column;   /* Stack elements vertically */
-    align-items: center;      /* Center them horizontally */
-    gap: 15px;                /* Space between input, button, and list */
-    margin-top: 50px;
-    width: 100%;
-    padding-top: 50px; 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  margin-top: 50px;
+  width: 100%;
+  padding-top: 50px;
 }
 
 #taskInput {
-      width: 500px;
-      height: 40px;
-      padding: 10px right;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      white-space: nowrap;  
-    }
-#addBtn {
-    width: 100px;
-      height: 40px;
-      padding: 10px 15px;
-      background: #4CAF50;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      white-space: nowrap;  
+  width: 90%; /* Use percentage for width */
+  max-width: 500px; /* Prevent it from getting too wide */
+  height: 40px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem; /* Use em or rem for font size */
 }
+
+#addBtn {
+  width: 150px; /* Use a fixed width that works well on most devices */
+  height: 40px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
 #addBtn:hover {
-      background: #45a049;
+  background: #45a049;
 }
 
 #taskList li {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 18px;   /* ✅ Bigger text */
+  font-size: 1.2rem; /* Adjusted font size */
   padding: 10px;
   border-bottom: 1px solid #ddd;
+  word-break: break-word; /* Prevents long words from overflowing */
 }
+
 .task-checkbox {
-  transform: scale(1.4);  /* ✅ Enlarges checkbox */
+  transform: scale(1.4);
   cursor: pointer;
 }
+
 .task-text.completed {
   text-decoration: line-through;
   color: gray;
 }
-#victoryImg {   
-      display: none !important; /* Force hide initially */
-      opacity: 0;   
-      transform: scale(0.5);
-      margin: 20px auto;
-      max-width: 200px;
-      width: 100%;
-      border-radius: 15px;
-    }     
 
-    #victoryImg.show {   
-      display: block !important; /* Force show when class is added */
-      animation: victorypop 0.8s ease-out forwards !important; 
-    } 
+#victoryImg {
+  display: none !important;
+  opacity: 0;
+  transform: scale(0.5);
+  margin: 20px auto;
+  max-width: 200px;
+  width: 100%;
+  border-radius: 15px;
+}
 
-    /* 🎯 FIXED: Correct animation name */
-    @keyframes victorypop {   
-      0% { 
-        transform: scale(0.3) rotate(-15deg); 
-        opacity: 0; 
-      }   
-      50%  { 
-        transform: scale(1.1) rotate(5deg);  
-        opacity: 1; 
-      }   
-      70%  { 
-        transform: scale(0.95) rotate(-2deg); 
-        opacity: 1; 
-      }   
-      100% { 
-        transform: scale(1) rotate(0deg); 
-        opacity: 1; 
-      } 
-    }
+#victoryImg.show {
+  display: block !important;
+  animation: victorypop 0.8s ease-out forwards !important;
+}
+
+@keyframes victorypop {
+  0% {
+    transform: scale(0.3) rotate(-15deg);
+    opacity: 0;
+  }
+
+  50% {
+    transform: scale(1.1) rotate(5deg);
+    opacity: 1;
+  }
+
+  70% {
+    transform: scale(0.95) rotate(-2deg);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+}
